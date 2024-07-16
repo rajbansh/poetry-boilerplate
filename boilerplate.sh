@@ -30,6 +30,16 @@ version = "0.1.0"
 description = ""
 authors = [{name="R Raj", email="rajbansh4@gmail.com"}]
 readme = "README.md"
+dependencies = [
+    # List of dependencies:
+    # "requests>=2.24.0",
+]
+[tool.setuptools.packages.find]
+where = ["$PROJECT_NAME"]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
 EOM
 
 
@@ -172,9 +182,13 @@ git init
 . $VENV_PATH/bin/activate && pre-commit run
 
 # Generate sample python code and unit test
-cat << EOM > $PROJECT_NAME/main.py
+cat << EOM > $PROJECT_NAME/hello.py
 def hello():
     return "hello"
+EOM
+
+cat << EOM > $PROJECT_NAME/main.py
+from $PROJECT_NAME.hello import hello
 
 
 if __name__ == "__main__":
@@ -182,7 +196,7 @@ if __name__ == "__main__":
 EOM
 
 cat << EOM > tests/test_main.py
-from $PROJECT_NAME.main import hello
+from $PROJECT_NAME.hello import hello
 
 def test_hello():
     assert hello() == "hello"
@@ -191,6 +205,7 @@ EOM
 touch $PROJECT_NAME/py.typed
 
 pip freeze > requirements.txt
+. $VENV_PATH/bin/activate && pip install .
 
 echo "Setup git with 'git remote add origin git@github.com:User/UserRepo.git'"
 echo "git push -u origin main"
